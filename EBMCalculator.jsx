@@ -1,4 +1,4 @@
-// Version: 1.6
+// Version: 1.7
 import { useState, useMemo } from "react";
 import { Baby, Milk, Clock, Calculator, CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
 
@@ -70,15 +70,23 @@ function num(raw, min) {
 }
 
 export default function EBMCalculator() {
-  // Store raw strings so the user can clear the field while typing.
-  const [weightInput, setWeightInput] = useState("6");
-  const [ageInput, setAgeInput] = useState("4");
-  const [perFeedTargetOzInput, setPerFeedTargetOzInput] = useState("4");
-  const [frequency, setFrequency] = useState(8);
+  // Empty by default so first-time users see a clean form.
+  const [weightInput, setWeightInput] = useState("");
+  const [ageInput, setAgeInput] = useState("");
+  const [perFeedTargetOzInput, setPerFeedTargetOzInput] = useState("");
+  const [frequency, setFrequency] = useState(null);
 
   const weight = num(weightInput, 1);
   const age = Math.max(0, Math.floor(num(ageInput, 0)));
   const perFeedTargetOz = num(perFeedTargetOzInput, 1);
+
+  const isReady =
+    weightInput.trim() !== "" &&
+    ageInput.trim() !== "" &&
+    perFeedTargetOzInput.trim() !== "" &&
+    frequency !== null &&
+    parseFloat(weightInput) > 0 &&
+    parseFloat(perFeedTargetOzInput) > 0;
 
   const calc = useMemo(() => {
     const totalMl = weight * 150;
@@ -305,9 +313,10 @@ export default function EBMCalculator() {
                 step="0.1"
                 min="1"
                 max="20"
+                placeholder="cth: 6"
                 value={weightInput}
                 onChange={(e) => setWeightInput(e.target.value)}
-                className="w-full px-4 py-3 bg-pink-50/60 border-2 border-pink-100 rounded-2xl focus:ring-4 focus:ring-pink-200 focus:border-pink-300 focus:bg-white outline-none text-pink-900 font-medium transition-all"
+                className="w-full px-4 py-3 bg-pink-50/60 border-2 border-pink-100 rounded-2xl focus:ring-4 focus:ring-pink-200 focus:border-pink-300 focus:bg-white outline-none text-pink-900 font-medium transition-all placeholder:text-pink-300 placeholder:font-normal"
               />
             </div>
             <div>
@@ -320,9 +329,10 @@ export default function EBMCalculator() {
                 step="1"
                 min="0"
                 max="24"
+                placeholder="cth: 4"
                 value={ageInput}
                 onChange={(e) => setAgeInput(e.target.value)}
-                className="w-full px-4 py-3 bg-pink-50/60 border-2 border-pink-100 rounded-2xl focus:ring-4 focus:ring-pink-200 focus:border-pink-300 focus:bg-white outline-none text-pink-900 font-medium transition-all"
+                className="w-full px-4 py-3 bg-pink-50/60 border-2 border-pink-100 rounded-2xl focus:ring-4 focus:ring-pink-200 focus:border-pink-300 focus:bg-white outline-none text-pink-900 font-medium transition-all placeholder:text-pink-300 placeholder:font-normal"
               />
             </div>
           </div>
@@ -340,9 +350,10 @@ export default function EBMCalculator() {
                   step="0.5"
                   min="1"
                   max="10"
+                  placeholder="4"
                   value={perFeedTargetOzInput}
                   onChange={(e) => setPerFeedTargetOzInput(e.target.value)}
-                  className="w-20 px-3 py-1.5 bg-pink-50/60 border-2 border-pink-100 rounded-full text-sm text-right font-semibold text-pink-700 focus:ring-4 focus:ring-pink-200 focus:border-pink-300 focus:bg-white outline-none transition-all"
+                  className="w-20 px-3 py-1.5 bg-pink-50/60 border-2 border-pink-100 rounded-full text-sm text-right font-semibold text-pink-700 focus:ring-4 focus:ring-pink-200 focus:border-pink-300 focus:bg-white outline-none transition-all placeholder:text-pink-300 placeholder:font-normal"
                 />
                 <span className="text-sm text-pink-500 font-medium">oz</span>
               </div>
@@ -353,16 +364,20 @@ export default function EBMCalculator() {
               min="1"
               max="10"
               step="0.5"
-              value={perFeedTargetOz}
+              value={perFeedTargetOzInput === "" ? 4 : perFeedTargetOz}
               onChange={(e) => setPerFeedTargetOzInput(e.target.value)}
               className="w-full h-3 bg-pink-100 rounded-full appearance-none cursor-pointer accent-pink-400"
             />
             <div className="flex justify-between text-xs mt-2">
               <span className="text-pink-300 font-medium">1oz</span>
-              <span className="text-pink-500 font-bold">
-                Disyorkan: {calc.recommendedPerFeedOz}oz
-                <span className="text-pink-300 font-normal"> ({calc.recommendedPerFeedMl}ml)</span>
-              </span>
+              {weightInput.trim() !== "" && frequency !== null ? (
+                <span className="text-pink-500 font-bold">
+                  Disyorkan: {calc.recommendedPerFeedOz}oz
+                  <span className="text-pink-300 font-normal"> ({calc.recommendedPerFeedMl}ml)</span>
+                </span>
+              ) : (
+                <span className="text-pink-300 font-normal">Isi berat & kekerapan untuk syor</span>
+              )}
               <span className="text-pink-300 font-medium">10oz</span>
             </div>
           </div>
@@ -389,6 +404,18 @@ export default function EBMCalculator() {
             </div>
           </div>
         </div>
+
+        {!isReady && (
+          <div className="bg-pink-50/60 border-2 border-dashed border-pink-200 rounded-[2rem] p-6 mb-5 text-center">
+            <div className="text-3xl mb-2">🍼</div>
+            <div className="text-sm font-bold text-pink-600 mb-1">Isi semua maklumat di atas</div>
+            <p className="text-xs text-pink-400 font-medium">
+              Berat, umur, volume per feed & kekerapan — kami akan kira keperluan susu bayi anda.
+            </p>
+          </div>
+        )}
+
+        {isReady && <>
 
         {/* Overall Status */}
         <div className="bg-white rounded-[2rem] shadow-xl shadow-pink-200/40 border border-pink-100 p-6 mb-5">
@@ -541,14 +568,16 @@ export default function EBMCalculator() {
           </p>
         </div>
 
-        {/* Notes */}
+        </>}
+
+        {/* Notes — always shown so the Nyusoo CTA stays visible */}
         <div className="bg-white rounded-[2rem] shadow-xl shadow-pink-200/40 border border-pink-100 p-6 sm:p-7 mb-5">
           <div className="flex items-center gap-2 mb-3">
             <h2 className="text-xs font-bold text-pink-500 uppercase tracking-widest">
               ✿ Nota & Panduan
             </h2>
           </div>
-          {notes.length > 0 && (
+          {isReady && notes.length > 0 && (
             <div className="space-y-2 mb-4">
               {notes.map((note, i) => (
                 <div
@@ -594,7 +623,7 @@ export default function EBMCalculator() {
           🌸 Formula: Berat (kg) × 150ml. Panduan ni sebagai rujukan kasar je —
           sila rujuk pediatrician untuk nasihat khusus.
         </p>
-        <p className="text-xs text-center text-pink-300 mt-2 font-semibold">v1.6</p>
+        <p className="text-xs text-center text-pink-300 mt-2 font-semibold">v1.7</p>
       </div>
     </div>
   );
