@@ -1,4 +1,4 @@
-// Version: 2.2
+// Version: 2.3
 import { useState, useMemo } from "react";
 import { Baby, Milk, Clock, Calculator, CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
 
@@ -287,17 +287,6 @@ export default function EBMCalculator() {
     return checks;
   }, [weight, age, frequency, calc]);
 
-  // Worst status across all checks + weight.
-  const overallStatus = useMemo(() => {
-    const all = [
-      ...feedingSuitability.map((c) => c.status),
-      weightStatus.status === "underweight" ? "red" : weightStatus.status === "overweight" ? "yellow" : "green",
-    ];
-    if (all.includes("red")) return "red";
-    if (all.includes("yellow")) return "yellow";
-    return "green";
-  }, [feedingSuitability, weightStatus]);
-
   return (
     <div className="min-h-screen bg-white p-4 sm:p-6 relative overflow-hidden">
       {/* Decorative bubbles */}
@@ -464,25 +453,6 @@ export default function EBMCalculator() {
         )}
 
         {isReady && <>
-
-        {/* Overall Status */}
-        <div className="bg-white rounded-[2rem] shadow-xl shadow-pink-200/40 border border-pink-100 p-6 mb-5">
-          <div className="text-xs font-bold text-pink-500 uppercase tracking-widest mb-1">Status Keseluruhan</div>
-          <div className={`text-xl font-extrabold ${
-            overallStatus === "green" ? "text-emerald-600" :
-            overallStatus === "yellow" ? "text-amber-600" :
-            "text-red-600"
-          }`}>
-            {overallStatus === "green" ? "Semua Sihat 🌸" :
-             overallStatus === "yellow" ? "Perlu Perhatian" :
-             "Perlu Tindakan Segera"}
-          </div>
-          <p className="text-xs text-pink-400 font-medium mt-1">
-            {overallStatus === "green" ? "Berat & feeding plan dalam julat baik." :
-             overallStatus === "yellow" ? "Ada item yang perlu disemak — tengok bawah." :
-             "Ada item kritikal — sila rujuk pediatrician."}
-          </p>
-        </div>
 
         {/* Weight Status */}
         <div className={`rounded-[2rem] border-2 p-6 mb-5 shadow-lg ${
@@ -698,7 +668,7 @@ export default function EBMCalculator() {
           🌸 Formula: Berat (kg) × 150ml. Panduan ni sebagai rujukan kasar je —
           sila rujuk pediatrician untuk nasihat khusus.
         </p>
-        <p className="text-xs text-center text-pink-300 mt-2 font-semibold">v2.2</p>
+        <p className="text-xs text-center text-pink-300 mt-2 font-semibold">v2.3</p>
       </div>
     </div>
   );
