@@ -1,4 +1,4 @@
-// Version: 1.9
+// Version: 2.0
 import { useState, useMemo } from "react";
 import { Baby, Milk, Clock, Calculator, CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
 
@@ -40,14 +40,15 @@ function StatusDot({ status }) {
 }
 
 
-// Approximate WHO weight-for-age (combined boys/girls average), -2SD..+2SD.
-const WHO_STANDARDS = {
+// WHO Child Growth Standards 2006 — weight-for-age (kg), -2SD / median / +2SD.
+// Same reference table used in Malaysia's Buku Rekod Kesihatan Bayi & Kanak-kanak (KKM).
+const WHO_BOYS = {
   0: { min: 2.5, median: 3.3, max: 4.4 },
   1: { min: 3.4, median: 4.5, max: 5.8 },
-  2: { min: 4.4, median: 5.6, max: 7.1 },
-  3: { min: 5.1, median: 6.4, max: 8.0 },
+  2: { min: 4.3, median: 5.6, max: 7.1 },
+  3: { min: 5.0, median: 6.4, max: 8.0 },
   4: { min: 5.6, median: 7.0, max: 8.7 },
-  5: { min: 6.1, median: 7.5, max: 9.3 },
+  5: { min: 6.0, median: 7.5, max: 9.3 },
   6: { min: 6.4, median: 7.9, max: 9.8 },
   7: { min: 6.7, median: 8.3, max: 10.3 },
   8: { min: 6.9, median: 8.6, max: 10.7 },
@@ -59,7 +60,25 @@ const WHO_STANDARDS = {
   18: { min: 8.8, median: 10.9, max: 13.7 },
   24: { min: 9.7, median: 12.2, max: 15.3 },
 };
-const WHO_AGES = Object.keys(WHO_STANDARDS).map(Number).sort((a, b) => a - b);
+const WHO_GIRLS = {
+  0: { min: 2.4, median: 3.2, max: 4.2 },
+  1: { min: 3.2, median: 4.2, max: 5.5 },
+  2: { min: 3.9, median: 5.1, max: 6.6 },
+  3: { min: 4.5, median: 5.8, max: 7.5 },
+  4: { min: 5.0, median: 6.4, max: 8.2 },
+  5: { min: 5.4, median: 6.9, max: 8.8 },
+  6: { min: 5.7, median: 7.3, max: 9.3 },
+  7: { min: 6.0, median: 7.6, max: 9.8 },
+  8: { min: 6.3, median: 7.9, max: 10.2 },
+  9: { min: 6.5, median: 8.2, max: 10.5 },
+  10: { min: 6.7, median: 8.5, max: 10.9 },
+  11: { min: 6.9, median: 8.7, max: 11.2 },
+  12: { min: 7.0, median: 8.9, max: 11.5 },
+  15: { min: 7.6, median: 9.6, max: 12.4 },
+  18: { min: 8.1, median: 10.2, max: 13.2 },
+  24: { min: 9.0, median: 11.5, max: 14.8 },
+};
+const WHO_AGES = Object.keys(WHO_BOYS).map(Number).sort((a, b) => a - b);
 
 // Parse a raw input string but never collapse blank to 0 in the input itself.
 // Returns the numeric value clamped to a safe minimum for math.
@@ -75,6 +94,7 @@ export default function EBMCalculator() {
   const [ageInput, setAgeInput] = useState("");
   const [perFeedTargetOzInput, setPerFeedTargetOzInput] = useState("");
   const [frequency, setFrequency] = useState(null);
+  const [sex, setSex] = useState(null); // "boy" | "girl"
 
   const weight = num(weightInput, 1);
   const age = Math.max(0, Math.floor(num(ageInput, 0)));
@@ -85,6 +105,7 @@ export default function EBMCalculator() {
     ageInput.trim() !== "" &&
     perFeedTargetOzInput.trim() !== "" &&
     frequency !== null &&
+    sex !== null &&
     parseFloat(weightInput) > 0 &&
     parseFloat(perFeedTargetOzInput) > 0;
 
@@ -169,32 +190,34 @@ export default function EBMCalculator() {
   }, [age, weight, calc.perFeedMl]);
 
   const weightStatus = useMemo(() => {
+    const table = sex === "girl" ? WHO_GIRLS : WHO_BOYS;
     let closest = WHO_AGES[0];
     for (const a of WHO_AGES) {
       if (a <= age) closest = a;
     }
-    const ref = WHO_STANDARDS[closest] || WHO_STANDARDS[24];
+    const ref = table[closest] || table[24];
+    const sexLabel = sex === "girl" ? "perempuan" : "lelaki";
 
     let status, label, message, color;
     if (weight < ref.min) {
       status = "underweight";
       label = "Berat Rendah";
       color = "red";
-      message = `Berat bayi (${weight}kg) di bawah julat normal untuk umur ${age} bulan (${ref.min}-${ref.max}kg). Sila rujuk pediatrician segera.`;
+      message = `Berat bayi ${sexLabel} (${weight}kg) di bawah julat normal untuk umur ${age} bulan (${ref.min}-${ref.max}kg). Sila rujuk pediatrician segera.`;
     } else if (weight > ref.max) {
       status = "overweight";
       label = "Berat Tinggi";
       color = "amber";
-      message = `Berat bayi (${weight}kg) di atas julat normal untuk umur ${age} bulan (${ref.min}-${ref.max}kg). Sila rujuk pediatrician.`;
+      message = `Berat bayi ${sexLabel} (${weight}kg) di atas julat normal untuk umur ${age} bulan (${ref.min}-${ref.max}kg). Sila rujuk pediatrician.`;
     } else {
       status = "normal";
       label = "Berat Normal";
       color = "emerald";
-      message = `Berat bayi (${weight}kg) dalam julat sihat untuk umur ${age} bulan (${ref.min}-${ref.max}kg). Median: ${ref.median}kg.`;
+      message = `Berat bayi ${sexLabel} (${weight}kg) dalam julat sihat untuk umur ${age} bulan (${ref.min}-${ref.max}kg). Median: ${ref.median}kg.`;
     }
 
     return { status, label, message, color, ref };
-  }, [weight, age]);
+  }, [weight, age, sex]);
 
   const feedingSuitability = useMemo(() => {
     const checks = [];
@@ -301,6 +324,31 @@ export default function EBMCalculator() {
           <h2 className="text-xs font-bold text-pink-500 mb-4 uppercase tracking-widest">
             ✿ Maklumat Bayi
           </h2>
+
+          {/* Sex selector */}
+          <div className="mb-5">
+            <label className="block text-sm font-semibold text-pink-700 mb-2">
+              Jantina Bayi
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                { value: "boy", label: "👦 Lelaki" },
+                { value: "girl", label: "👧 Perempuan" },
+              ].map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => setSex(opt.value)}
+                  className={`py-3 rounded-2xl font-bold text-sm transition-all ${
+                    sex === opt.value
+                      ? "bg-gradient-to-br from-pink-400 to-rose-400 text-white shadow-lg shadow-pink-300/50 scale-[1.02]"
+                      : "bg-pink-50 text-pink-500 hover:bg-pink-100"
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
 
           <div className="grid grid-cols-2 gap-4 mb-6">
             <div>
@@ -461,7 +509,7 @@ export default function EBMCalculator() {
                 }`}>
                   Status Berat: {weightStatus.label}
                 </h3>
-                <span className="text-xs text-slate-500">WHO Standard</span>
+                <span className="text-xs text-slate-500">WHO / KKM</span>
               </div>
               <p className={`text-sm ${
                 weightStatus.color === "emerald" ? "text-emerald-800" :
@@ -485,7 +533,7 @@ export default function EBMCalculator() {
                 </div>
               </div>
               <p className="text-[11px] text-slate-500 mt-2">
-                Anggaran purata WHO 0–24 bulan. Untuk penilaian tepat, rujuk pediatrician.
+                Standard WHO Child Growth 0–24 bulan (sama seperti Buku Rekod Kesihatan Bayi KKM Malaysia). Untuk penilaian tepat, rujuk pediatrician.
               </p>
             </div>
           </div>
@@ -623,7 +671,7 @@ export default function EBMCalculator() {
           🌸 Formula: Berat (kg) × 150ml. Panduan ni sebagai rujukan kasar je —
           sila rujuk pediatrician untuk nasihat khusus.
         </p>
-        <p className="text-xs text-center text-pink-300 mt-2 font-semibold">v1.9</p>
+        <p className="text-xs text-center text-pink-300 mt-2 font-semibold">v2.0</p>
       </div>
     </div>
   );
