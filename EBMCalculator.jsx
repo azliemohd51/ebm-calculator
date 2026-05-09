@@ -1,4 +1,4 @@
-// Version: 1.8
+// Version: 1.9
 import { useState, useMemo } from "react";
 import { Baby, Milk, Clock, Calculator, CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
 
@@ -623,7 +623,7 @@ export default function EBMCalculator() {
           🌸 Formula: Berat (kg) × 150ml. Panduan ni sebagai rujukan kasar je —
           sila rujuk pediatrician untuk nasihat khusus.
         </p>
-        <p className="text-xs text-center text-pink-300 mt-2 font-semibold">v1.8</p>
+        <p className="text-xs text-center text-pink-300 mt-2 font-semibold">v1.9</p>
       </div>
     </div>
   );
