@@ -1,4 +1,4 @@
-// Version: 1.5
+// Version: 1.6
 import { useState, useMemo } from "react";
 import { Baby, Milk, Clock, Calculator, CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
 
@@ -542,14 +542,14 @@ export default function EBMCalculator() {
         </div>
 
         {/* Notes */}
-        {notes.length > 0 && (
-          <div className="bg-white rounded-[2rem] shadow-xl shadow-pink-200/40 border border-pink-100 p-6 sm:p-7 mb-5">
-            <div className="flex items-center gap-2 mb-3">
-              <h2 className="text-xs font-bold text-pink-500 uppercase tracking-widest">
-                ✿ Nota & Panduan
-              </h2>
-            </div>
-            <div className="space-y-2">
+        <div className="bg-white rounded-[2rem] shadow-xl shadow-pink-200/40 border border-pink-100 p-6 sm:p-7 mb-5">
+          <div className="flex items-center gap-2 mb-3">
+            <h2 className="text-xs font-bold text-pink-500 uppercase tracking-widest">
+              ✿ Nota & Panduan
+            </h2>
+          </div>
+          {notes.length > 0 && (
+            <div className="space-y-2 mb-4">
               {notes.map((note, i) => (
                 <div
                   key={i}
@@ -563,15 +563,38 @@ export default function EBMCalculator() {
                 </div>
               ))}
             </div>
-          </div>
-        )}
+          )}
+
+          {/* Nyusoo class promotion */}
+          <a
+            href="https://nyusoo.com/product-category/class/?utm_source=calculator&utm_medium=social&utm_campaign=ebm_calculator"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block group rounded-2xl bg-gradient-to-br from-pink-400 via-rose-400 to-pink-500 p-5 shadow-lg shadow-pink-300/40 hover:shadow-xl hover:shadow-pink-400/50 hover:scale-[1.02] transition-all"
+          >
+            <div className="flex items-center gap-3">
+              <div className="text-3xl">🤱</div>
+              <div className="flex-1">
+                <div className="text-xs font-bold text-pink-100 uppercase tracking-widest mb-0.5">
+                  Belajar dengan Nyusoo
+                </div>
+                <div className="text-base font-extrabold text-white leading-tight">
+                  Kelas Penyusuan Susu Ibu & Bayi
+                </div>
+                <div className="text-xs text-pink-50/90 mt-1 font-medium">
+                  Pelbagai kelas online untuk ibu — sentiasa update! Tap untuk semak →
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
 
         {/* Footer */}
         <p className="text-xs text-center text-pink-400 mt-8 font-medium">
           🌸 Formula: Berat (kg) × 150ml. Panduan ni sebagai rujukan kasar je —
           sila rujuk pediatrician untuk nasihat khusus.
         </p>
-        <p className="text-xs text-center text-pink-300 mt-2 font-semibold">v1.5</p>
+        <p className="text-xs text-center text-pink-300 mt-2 font-semibold">v1.6</p>
       </div>
     </div>
   );
