@@ -1,4 +1,4 @@
-// Version: 2.0
+// Version: 2.1
 import { useState, useMemo } from "react";
 import { Baby, Milk, Clock, Calculator, CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
 
@@ -616,6 +616,34 @@ export default function EBMCalculator() {
           </p>
         </div>
 
+        {/* Reassurance for pumping mothers */}
+        <div className="rounded-[2rem] border-2 border-rose-200 bg-gradient-to-br from-rose-50 to-pink-50 p-6 sm:p-7 mb-5 shadow-lg shadow-rose-200/30">
+          <div className="flex items-start gap-3 mb-3">
+            <div className="text-2xl">💝</div>
+            <div>
+              <div className="text-xs font-bold text-rose-500 uppercase tracking-widest mb-0.5">
+                Pesanan Untuk Ibu
+              </div>
+              <h3 className="text-lg font-extrabold text-rose-700">
+                Angka ni PANDUAN, bukan target wajib
+              </h3>
+            </div>
+          </div>
+          <p className="text-sm text-rose-900 leading-relaxed mb-3">
+            Kalau ibu sedang pumping & rasa tak cukup susu — please jangan tertekan. Setiap titik susu ibu sangat bermakna untuk bayi. Anda dah buat yang terbaik. 🌷
+          </p>
+          <ul className="space-y-2 text-sm text-rose-900">
+            <li className="flex gap-2"><span className="text-rose-400">✿</span><span>Bayi tak perlu 100% EBM — <b>combo feed</b> (EBM + formula) pun sihat & OK.</span></li>
+            <li className="flex gap-2"><span className="text-rose-400">✿</span><span>Setiap ibu berbeza. Ada yang banyak, ada yang sedikit — <b>semua normal</b>.</span></li>
+            <li className="flex gap-2"><span className="text-rose-400">✿</span><span>Jangan compare dengan ibu lain atau dengan angka di sini.</span></li>
+            <li className="flex gap-2"><span className="text-rose-400">✿</span><span>Yang penting: bayi <b>cukup makan, sihat & happy</b> — bukan angka di calculator.</span></li>
+            <li className="flex gap-2"><span className="text-rose-400">✿</span><span>Kalau struggle dengan supply, jumpa <b>lactation consultant</b> — dia boleh bantu tingkatkan supply atau plan combo feed yang sesuai.</span></li>
+          </ul>
+          <p className="text-sm font-bold text-rose-600 mt-4 text-center">
+            Ibu hebat. Bayi sayang ibu. 💕
+          </p>
+        </div>
+
         </>}
 
         {/* Notes — always shown so the Nyusoo CTA stays visible */}
@@ -671,7 +699,7 @@ export default function EBMCalculator() {
           🌸 Formula: Berat (kg) × 150ml. Panduan ni sebagai rujukan kasar je —
           sila rujuk pediatrician untuk nasihat khusus.
         </p>
-        <p className="text-xs text-center text-pink-300 mt-2 font-semibold">v2.0</p>
+        <p className="text-xs text-center text-pink-300 mt-2 font-semibold">v2.1</p>
       </div>
     </div>
   );
