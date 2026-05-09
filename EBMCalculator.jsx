@@ -1,4 +1,4 @@
-// Version: 1.1
+// Version: 1.2
 import { useState, useMemo } from "react";
 import { Baby, Milk, Clock, Calculator, Info, CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
 
@@ -216,30 +216,35 @@ export default function EBMCalculator() {
   }, [weight, age, frequency, calc]);
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 sm:p-6">
-      <div className="max-w-3xl mx-auto">
+    <div className="min-h-screen bg-white p-4 sm:p-6 relative overflow-hidden">
+      {/* Decorative bubbles */}
+      <div className="pointer-events-none absolute -top-16 -left-16 w-72 h-72 rounded-full bg-pink-100/60 blur-3xl" />
+      <div className="pointer-events-none absolute top-40 -right-20 w-80 h-80 rounded-full bg-rose-100/50 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-0 left-1/3 w-96 h-96 rounded-full bg-pink-50 blur-3xl" />
+
+      <div className="max-w-3xl mx-auto relative">
         {/* Header */}
-        <div className="mb-6 text-center">
-          <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mb-3">
-            <Baby className="w-6 h-6 text-blue-600" />
+        <div className="mb-8 text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-pink-100 to-rose-200 rounded-full mb-4 shadow-lg shadow-pink-200/50 ring-4 ring-white">
+            <Baby className="w-8 h-8 text-pink-500" />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">
-            Kalkulator Susu Bayi / EBM
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-pink-600 tracking-tight">
+            Kalkulator Susu Bayi 🍼
           </h1>
-          <p className="text-sm text-slate-600 mt-1">
-            Kira keperluan susu harian bayi dengan tepat
+          <p className="text-sm text-pink-400 mt-2 font-medium">
+            Kira keperluan susu harian bayi dengan lembut & tepat
           </p>
         </div>
 
         {/* Input Section */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 sm:p-6 mb-5">
-          <h2 className="text-sm font-semibold text-slate-700 mb-4 uppercase tracking-wide">
-            Maklumat Bayi
+        <div className="bg-white rounded-[2rem] shadow-xl shadow-pink-200/40 border border-pink-100 p-6 sm:p-7 mb-5">
+          <h2 className="text-xs font-bold text-pink-500 mb-4 uppercase tracking-widest">
+            ✿ Maklumat Bayi
           </h2>
 
-          <div className="grid grid-cols-2 gap-4 mb-5">
+          <div className="grid grid-cols-2 gap-4 mb-6">
             <div>
-              <label htmlFor="ebm-weight" className="block text-sm font-medium text-slate-700 mb-2">
+              <label htmlFor="ebm-weight" className="block text-sm font-semibold text-pink-700 mb-2">
                 Berat Bayi (kg)
               </label>
               <input
@@ -250,11 +255,11 @@ export default function EBMCalculator() {
                 max="20"
                 value={weightInput}
                 onChange={(e) => setWeightInput(e.target.value)}
-                className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-slate-900"
+                className="w-full px-4 py-3 bg-pink-50/60 border-2 border-pink-100 rounded-2xl focus:ring-4 focus:ring-pink-200 focus:border-pink-300 focus:bg-white outline-none text-pink-900 font-medium transition-all"
               />
             </div>
             <div>
-              <label htmlFor="ebm-age" className="block text-sm font-medium text-slate-700 mb-2">
+              <label htmlFor="ebm-age" className="block text-sm font-semibold text-pink-700 mb-2">
                 Umur (bulan)
               </label>
               <input
@@ -265,15 +270,15 @@ export default function EBMCalculator() {
                 max="24"
                 value={ageInput}
                 onChange={(e) => setAgeInput(e.target.value)}
-                className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-slate-900"
+                className="w-full px-4 py-3 bg-pink-50/60 border-2 border-pink-100 rounded-2xl focus:ring-4 focus:ring-pink-200 focus:border-pink-300 focus:bg-white outline-none text-pink-900 font-medium transition-all"
               />
             </div>
           </div>
 
           {/* Volume Per Feed */}
-          <div className="mb-5">
+          <div className="mb-6">
             <div className="flex items-center justify-between mb-2">
-              <label htmlFor="ebm-perfeed" className="text-sm font-medium text-slate-700">
+              <label htmlFor="ebm-perfeed" className="text-sm font-semibold text-pink-700">
                 Volume Per Feed
               </label>
               <div className="flex items-center gap-2">
@@ -285,9 +290,9 @@ export default function EBMCalculator() {
                   max="10"
                   value={perFeedTargetOzInput}
                   onChange={(e) => setPerFeedTargetOzInput(e.target.value)}
-                  className="w-20 px-2 py-1 border border-slate-300 rounded-md text-sm text-right focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                  className="w-20 px-3 py-1.5 bg-pink-50/60 border-2 border-pink-100 rounded-full text-sm text-right font-semibold text-pink-700 focus:ring-4 focus:ring-pink-200 focus:border-pink-300 focus:bg-white outline-none transition-all"
                 />
-                <span className="text-sm text-slate-600">oz</span>
+                <span className="text-sm text-pink-500 font-medium">oz</span>
               </div>
             </div>
             <input
@@ -298,21 +303,21 @@ export default function EBMCalculator() {
               step="0.5"
               value={perFeedTargetOz}
               onChange={(e) => setPerFeedTargetOzInput(e.target.value)}
-              className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+              className="w-full h-3 bg-pink-100 rounded-full appearance-none cursor-pointer accent-pink-400"
             />
-            <div className="flex justify-between text-xs text-slate-500 mt-1">
-              <span>1oz</span>
-              <span className="text-blue-600 font-medium">
+            <div className="flex justify-between text-xs mt-2">
+              <span className="text-pink-300 font-medium">1oz</span>
+              <span className="text-pink-500 font-bold">
                 Disyorkan: {calc.recommendedPerFeedOz}oz
-                <span className="text-slate-400"> ({calc.recommendedPerFeedMl}ml)</span>
+                <span className="text-pink-300 font-normal"> ({calc.recommendedPerFeedMl}ml)</span>
               </span>
-              <span>10oz</span>
+              <span className="text-pink-300 font-medium">10oz</span>
             </div>
           </div>
 
           {/* Frequency */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-semibold text-pink-700 mb-2">
               Kekerapan Feeding / Hari
             </label>
             <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
@@ -320,10 +325,10 @@ export default function EBMCalculator() {
                 <button
                   key={f}
                   onClick={() => setFrequency(f)}
-                  className={`py-2.5 rounded-lg font-medium text-sm transition-all ${
+                  className={`py-3 rounded-2xl font-bold text-sm transition-all ${
                     frequency === f
-                      ? "bg-blue-600 text-white shadow-sm"
-                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                      ? "bg-gradient-to-br from-pink-400 to-rose-400 text-white shadow-lg shadow-pink-300/50 scale-105"
+                      : "bg-pink-50 text-pink-500 hover:bg-pink-100 hover:scale-105"
                   }`}
                 >
                   {f}x
@@ -334,10 +339,10 @@ export default function EBMCalculator() {
         </div>
 
         {/* Weight Status */}
-        <div className={`rounded-2xl border p-5 mb-5 ${
-          weightStatus.color === "emerald" ? "bg-emerald-50 border-emerald-200" :
-          weightStatus.color === "amber" ? "bg-amber-50 border-amber-200" :
-          "bg-red-50 border-red-200"
+        <div className={`rounded-[2rem] border-2 p-6 mb-5 shadow-lg ${
+          weightStatus.color === "emerald" ? "bg-emerald-50/70 border-emerald-200 shadow-emerald-200/30" :
+          weightStatus.color === "amber" ? "bg-amber-50/70 border-amber-200 shadow-amber-200/30" :
+          "bg-rose-50/70 border-rose-200 shadow-rose-200/30"
         }`}>
           <div className="flex items-start gap-3">
             <div className="flex-shrink-0 mt-0.5">
@@ -389,21 +394,20 @@ export default function EBMCalculator() {
         </div>
 
         {/* Feeding Suitability */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 sm:p-6 mb-5">
+        <div className="bg-white rounded-[2rem] shadow-xl shadow-pink-200/40 border border-pink-100 p-6 sm:p-7 mb-5">
           <div className="flex items-center gap-2 mb-4">
-            <CheckCircle2 className="w-4 h-4 text-slate-600" />
-            <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">
-              Kesesuaian Feeding
+            <h2 className="text-xs font-bold text-pink-500 uppercase tracking-widest">
+              ✿ Kesesuaian Feeding
             </h2>
           </div>
           <div className="space-y-2">
             {feedingSuitability.map((check, i) => (
               <div
                 key={i}
-                className={`flex items-start gap-2 p-3 rounded-lg text-sm ${
+                className={`flex items-start gap-2 p-4 rounded-2xl text-sm ${
                   check.ok
-                    ? "bg-emerald-50 border border-emerald-100"
-                    : "bg-amber-50 border border-amber-100"
+                    ? "bg-emerald-50/70 border border-emerald-100"
+                    : "bg-amber-50/70 border border-amber-100"
                 }`}
               >
                 {check.ok ? (
@@ -426,71 +430,69 @@ export default function EBMCalculator() {
             label="Keperluan Sehari"
             value={`${calc.totalOz} oz`}
             sub={`${calc.totalMl} ml`}
-            color="blue"
+            color="pink"
           />
           <MetricCard
             icon={<Calculator className="w-4 h-4" />}
             label="Total Intake"
             value={`${calc.totalFromTargetOz} oz`}
             sub={`${calc.totalFromTargetMl} ml`}
-            color="emerald"
+            color="rose"
           />
           <MetricCard
             icon={<Milk className="w-4 h-4" />}
             label="Per Feed"
             value={`${calc.perFeedOz} oz`}
             sub={`${calc.perFeedMl} ml`}
-            color="amber"
+            color="peach"
           />
           <MetricCard
             icon={<Clock className="w-4 h-4" />}
             label="Interval"
             value={`${calc.interval}j`}
             sub="setiap feeding"
-            color="violet"
+            color="lavender"
           />
         </div>
 
         {/* Schedule */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 sm:p-6 mb-5">
+        <div className="bg-white rounded-[2rem] shadow-xl shadow-pink-200/40 border border-pink-100 p-6 sm:p-7 mb-5">
           <div className="flex items-center gap-2 mb-4">
-            <Clock className="w-4 h-4 text-slate-600" />
-            <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">
-              Jadual Feeding
+            <h2 className="text-xs font-bold text-pink-500 uppercase tracking-widest">
+              ✿ Jadual Feeding
             </h2>
           </div>
           <div className="flex flex-wrap gap-2">
             {schedule.map((time, i) => (
               <div
                 key={i}
-                className="px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-full text-sm font-medium text-blue-700"
+                className="px-4 py-2 bg-gradient-to-br from-pink-100 to-rose-100 border border-pink-200 rounded-full text-sm font-semibold text-pink-600 shadow-sm"
               >
                 {time}
               </div>
             ))}
           </div>
-          <p className="text-xs text-slate-500 mt-3">
-            Bermula 6:00 AM • Setiap {calc.interval} jam
+          <p className="text-xs text-pink-400 mt-4 font-medium">
+            🌸 Bermula 6:00 AM • Setiap {calc.interval} jam
           </p>
         </div>
 
         {/* Notes */}
         {notes.length > 0 && (
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 sm:p-6 mb-5">
+          <div className="bg-white rounded-[2rem] shadow-xl shadow-pink-200/40 border border-pink-100 p-6 sm:p-7 mb-5">
             <div className="flex items-center gap-2 mb-3">
-              <Info className="w-4 h-4 text-slate-600" />
-              <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">
-                Nota & Panduan
+              <h2 className="text-xs font-bold text-pink-500 uppercase tracking-widest">
+                ✿ Nota & Panduan
               </h2>
             </div>
             <div className="space-y-2">
               {notes.map((note, i) => (
                 <div
                   key={i}
-                  className={`p-3 rounded-lg text-sm ${
+                  className={`p-4 rounded-2xl text-sm ${
                     note.type === "warning"
-                      ? "bg-amber-50 border border-amber-200 text-amber-900"
-                      : "bg-blue-50 border border-blue-200 text-blue-900"
+                      ? "bg-amber-50/70 border border-amber-200 text-amber-900"
+                      : "bg-pink-50/70 border border-pink-200 text-pink-800"
                   }`}
                 >
                   {note.text}
@@ -501,11 +503,11 @@ export default function EBMCalculator() {
         )}
 
         {/* Footer */}
-        <p className="text-xs text-center text-slate-500 mt-6">
-          Formula: Berat (kg) × 150ml. Panduan ni sebagai rujukan kasar je —
+        <p className="text-xs text-center text-pink-400 mt-8 font-medium">
+          🌸 Formula: Berat (kg) × 150ml. Panduan ni sebagai rujukan kasar je —
           sila rujuk pediatrician untuk nasihat khusus.
         </p>
-        <p className="text-xs text-center text-slate-400 mt-2">v1.1</p>
+        <p className="text-xs text-center text-pink-300 mt-2 font-semibold">v1.2</p>
       </div>
     </div>
   );
@@ -513,22 +515,22 @@ export default function EBMCalculator() {
 
 function MetricCard({ icon, label, value, sub, color }) {
   const colors = {
-    blue: "bg-blue-50 text-blue-600 border-blue-100",
-    emerald: "bg-emerald-50 text-emerald-600 border-emerald-100",
-    amber: "bg-amber-50 text-amber-600 border-amber-100",
-    violet: "bg-violet-50 text-violet-600 border-violet-100",
+    pink: "bg-gradient-to-br from-pink-100 to-pink-200 text-pink-600",
+    rose: "bg-gradient-to-br from-rose-100 to-rose-200 text-rose-600",
+    peach: "bg-gradient-to-br from-orange-100 to-pink-100 text-orange-500",
+    lavender: "bg-gradient-to-br from-purple-100 to-pink-100 text-purple-500",
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+    <div className="bg-white rounded-3xl shadow-lg shadow-pink-200/30 border border-pink-100 p-5">
       <div className="flex items-center gap-2 mb-2">
-        <div className={`p-1.5 rounded-md ${colors[color]}`}>{icon}</div>
-        <span className="text-xs font-medium text-slate-600 uppercase tracking-wide">
+        <div className={`p-2 rounded-2xl ${colors[color]}`}>{icon}</div>
+        <span className="text-xs font-bold text-pink-500 uppercase tracking-wider">
           {label}
         </span>
       </div>
-      <div className="text-2xl font-bold text-slate-900">{value}</div>
-      <div className="text-xs text-slate-500 mt-0.5">{sub}</div>
+      <div className="text-2xl font-extrabold text-pink-700">{value}</div>
+      <div className="text-xs text-pink-400 mt-0.5 font-medium">{sub}</div>
     </div>
   );
 }
