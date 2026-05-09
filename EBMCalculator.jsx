@@ -1,9 +1,64 @@
-// Version: 1.2
+// Version: 1.3
 import { useState, useMemo } from "react";
-import { Baby, Milk, Clock, Calculator, Info, CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
+import { Baby, Milk, Clock, Calculator, CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
 
 const ML_PER_OZ = 29.5735;
 const FREQUENCY_OPTIONS = [6, 7, 8, 9, 10, 11, 12];
+
+const STATUS_TONES = {
+  green: {
+    dot: "bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.6)]",
+    bg: "bg-emerald-50/70",
+    border: "border border-emerald-100",
+    text: "text-emerald-900",
+    label: "text-emerald-600",
+  },
+  yellow: {
+    dot: "bg-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.6)]",
+    bg: "bg-amber-50/70",
+    border: "border border-amber-100",
+    text: "text-amber-900",
+    label: "text-amber-600",
+  },
+  red: {
+    dot: "bg-red-500 shadow-[0_0_12px_rgba(239,68,68,0.6)]",
+    bg: "bg-red-50/70",
+    border: "border border-red-100",
+    text: "text-red-900",
+    label: "text-red-600",
+  },
+};
+
+function StatusDot({ status }) {
+  return (
+    <span
+      role="img"
+      aria-label={status}
+      className={`flex-shrink-0 mt-1 w-3 h-3 rounded-full ${STATUS_TONES[status].dot}`}
+    />
+  );
+}
+
+function TrafficLight({ active }) {
+  const lamps = ["red", "yellow", "green"];
+  return (
+    <div className="flex flex-col gap-1.5 p-2 bg-slate-800 rounded-2xl shadow-inner">
+      {lamps.map((c) => {
+        const isOn = active === c;
+        const onClass =
+          c === "red" ? "bg-red-500 shadow-[0_0_16px_rgba(239,68,68,0.9)]" :
+          c === "yellow" ? "bg-amber-400 shadow-[0_0_16px_rgba(251,191,36,0.9)]" :
+          "bg-emerald-500 shadow-[0_0_16px_rgba(16,185,129,0.9)]";
+        return (
+          <span
+            key={c}
+            className={`w-5 h-5 rounded-full transition-all ${isOn ? onClass : "bg-slate-700"}`}
+          />
+        );
+      })}
+    </div>
+  );
+}
 
 // Approximate WHO weight-for-age (combined boys/girls average), -2SD..+2SD.
 const WHO_STANDARDS = {
@@ -156,64 +211,81 @@ export default function EBMCalculator() {
   const feedingSuitability = useMemo(() => {
     const checks = [];
 
+    // Frequency check — yellow if outside age-typical range, green otherwise.
     if (age < 2 && frequency < 8) {
       checks.push({
-        ok: false,
+        status: "yellow",
         text: `Newborn biasanya perlu 8-12x feeding sehari. ${frequency}x mungkin terlalu sedikit.`,
       });
     } else if (age >= 6 && frequency > 8) {
       checks.push({
-        ok: false,
+        status: "yellow",
         text: `Bayi ${age} bulan biasanya 5-7x feeding je dah cukup (sebab dah makan solid).`,
       });
     } else {
       checks.push({
-        ok: true,
+        status: "green",
         text: `Kekerapan ${frequency}x sehari sesuai untuk umur ${age} bulan.`,
       });
     }
 
+    // Per-feed volume — red if dangerous (>180ml), yellow if low for newborn, green otherwise.
     if (calc.perFeedMlExact > 180) {
       checks.push({
-        ok: false,
-        text: `Per feed ${calc.perFeedOz}oz (${calc.perFeedMl}ml) terlalu banyak. Tambah frequency atau guna paced feeding.`,
+        status: "red",
+        text: `Per feed ${calc.perFeedOz}oz (${calc.perFeedMl}ml) terlalu banyak. Risiko overfeeding — guna paced bottle feeding atau tambah frequency.`,
       });
     } else if (calc.perFeedMlExact < 60 && age < 6) {
       checks.push({
-        ok: false,
+        status: "yellow",
         text: `Per feed ${calc.perFeedOz}oz (${calc.perFeedMl}ml) terlalu sedikit untuk bayi ini. Kurangkan frequency atau tambah volume.`,
       });
     } else {
       checks.push({
-        ok: true,
+        status: "green",
         text: `Volume per feed (${calc.perFeedOz}oz / ${calc.perFeedMl}ml) dalam julat sesuai.`,
       });
     }
 
+    // Total-intake — green ≤10%, yellow 10-25%, red >25% off requirement.
     const requiredMl = weight * 150;
     const requiredOz = (requiredMl / ML_PER_OZ).toFixed(1);
     const actualMl = calc.totalFromTargetMlExact;
     const diffPercent = ((actualMl - requiredMl) / requiredMl) * 100;
+    const absDiff = Math.abs(diffPercent);
+    const direction = diffPercent < 0 ? "kurang" : "lebih";
+    const action = diffPercent < 0 ? "Tambah volume atau frequency." : "Kurangkan volume atau frequency.";
 
-    if (Math.abs(diffPercent) <= 10) {
+    if (absDiff <= 10) {
       checks.push({
-        ok: true,
+        status: "green",
         text: `Total intake (${calc.totalFromTargetOz}oz / ${calc.totalFromTargetMl}ml) menepati keperluan harian (${requiredOz}oz / ${Math.round(requiredMl)}ml).`,
       });
-    } else if (diffPercent < 0) {
+    } else if (absDiff <= 25) {
       checks.push({
-        ok: false,
-        text: `Total intake (${calc.totalFromTargetOz}oz / ${calc.totalFromTargetMl}ml) kurang ${Math.abs(Math.round(diffPercent))}% dari keperluan (${requiredOz}oz / ${Math.round(requiredMl)}ml). Tambah volume atau frequency.`,
+        status: "yellow",
+        text: `Total intake (${calc.totalFromTargetOz}oz / ${calc.totalFromTargetMl}ml) ${direction} ${Math.round(absDiff)}% dari keperluan (${requiredOz}oz / ${Math.round(requiredMl)}ml). ${action}`,
       });
     } else {
       checks.push({
-        ok: false,
-        text: `Total intake (${calc.totalFromTargetOz}oz / ${calc.totalFromTargetMl}ml) lebih ${Math.round(diffPercent)}% dari keperluan (${requiredOz}oz / ${Math.round(requiredMl)}ml). Kurangkan volume atau frequency.`,
+        status: "red",
+        text: `Total intake (${calc.totalFromTargetOz}oz / ${calc.totalFromTargetMl}ml) ${direction} ${Math.round(absDiff)}% dari keperluan (${requiredOz}oz / ${Math.round(requiredMl)}ml) — perbezaan besar. ${action}`,
       });
     }
 
     return checks;
   }, [weight, age, frequency, calc]);
+
+  // Overall traffic light = worst status across all checks + weight.
+  const overallStatus = useMemo(() => {
+    const all = [
+      ...feedingSuitability.map((c) => c.status),
+      weightStatus.status === "underweight" ? "red" : weightStatus.status === "overweight" ? "yellow" : "green",
+    ];
+    if (all.includes("red")) return "red";
+    if (all.includes("yellow")) return "yellow";
+    return "green";
+  }, [feedingSuitability, weightStatus]);
 
   return (
     <div className="min-h-screen bg-white p-4 sm:p-6 relative overflow-hidden">
@@ -338,11 +410,33 @@ export default function EBMCalculator() {
           </div>
         </div>
 
+        {/* Overall Traffic Light */}
+        <div className="bg-white rounded-[2rem] shadow-xl shadow-pink-200/40 border border-pink-100 p-6 mb-5 flex items-center gap-5">
+          <TrafficLight active={overallStatus} />
+          <div className="flex-1">
+            <div className="text-xs font-bold text-pink-500 uppercase tracking-widest mb-1">Status Keseluruhan</div>
+            <div className={`text-xl font-extrabold ${
+              overallStatus === "green" ? "text-emerald-600" :
+              overallStatus === "yellow" ? "text-amber-600" :
+              "text-red-600"
+            }`}>
+              {overallStatus === "green" ? "Semua Sihat 🌸" :
+               overallStatus === "yellow" ? "Perlu Perhatian" :
+               "Perlu Tindakan Segera"}
+            </div>
+            <p className="text-xs text-pink-400 font-medium mt-1">
+              {overallStatus === "green" ? "Berat & feeding plan dalam julat baik." :
+               overallStatus === "yellow" ? "Ada item yang perlu disemak — tengok bawah." :
+               "Ada item kritikal — sila rujuk pediatrician."}
+            </p>
+          </div>
+        </div>
+
         {/* Weight Status */}
         <div className={`rounded-[2rem] border-2 p-6 mb-5 shadow-lg ${
           weightStatus.color === "emerald" ? "bg-emerald-50/70 border-emerald-200 shadow-emerald-200/30" :
           weightStatus.color === "amber" ? "bg-amber-50/70 border-amber-200 shadow-amber-200/30" :
-          "bg-rose-50/70 border-rose-200 shadow-rose-200/30"
+          "bg-red-50/70 border-red-200 shadow-red-200/30"
         }`}>
           <div className="flex items-start gap-3">
             <div className="flex-shrink-0 mt-0.5">
@@ -401,25 +495,18 @@ export default function EBMCalculator() {
             </h2>
           </div>
           <div className="space-y-2">
-            {feedingSuitability.map((check, i) => (
-              <div
-                key={i}
-                className={`flex items-start gap-2 p-4 rounded-2xl text-sm ${
-                  check.ok
-                    ? "bg-emerald-50/70 border border-emerald-100"
-                    : "bg-amber-50/70 border border-amber-100"
-                }`}
-              >
-                {check.ok ? (
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
-                ) : (
-                  <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
-                )}
-                <span className={check.ok ? "text-emerald-900" : "text-amber-900"}>
-                  {check.text}
-                </span>
-              </div>
-            ))}
+            {feedingSuitability.map((check, i) => {
+              const tone = STATUS_TONES[check.status];
+              return (
+                <div
+                  key={i}
+                  className={`flex items-start gap-3 p-4 rounded-2xl text-sm ${tone.bg} ${tone.border}`}
+                >
+                  <StatusDot status={check.status} />
+                  <span className={tone.text}>{check.text}</span>
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -507,7 +594,7 @@ export default function EBMCalculator() {
           🌸 Formula: Berat (kg) × 150ml. Panduan ni sebagai rujukan kasar je —
           sila rujuk pediatrician untuk nasihat khusus.
         </p>
-        <p className="text-xs text-center text-pink-300 mt-2 font-semibold">v1.2</p>
+        <p className="text-xs text-center text-pink-300 mt-2 font-semibold">v1.3</p>
       </div>
     </div>
   );
