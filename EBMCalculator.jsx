@@ -1,4 +1,4 @@
-// Version: 2.1
+// Version: 2.2
 import { useState, useMemo } from "react";
 import { Baby, Milk, Clock, Calculator, CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
 
@@ -633,7 +633,6 @@ export default function EBMCalculator() {
             Kalau ibu sedang pumping & rasa tak cukup susu — please jangan tertekan. Setiap titik susu ibu sangat bermakna untuk bayi. Anda dah buat yang terbaik. 🌷
           </p>
           <ul className="space-y-2 text-sm text-rose-900">
-            <li className="flex gap-2"><span className="text-rose-400">✿</span><span>Bayi tak perlu 100% EBM — <b>combo feed</b> (EBM + formula) pun sihat & OK.</span></li>
             <li className="flex gap-2"><span className="text-rose-400">✿</span><span>Setiap ibu berbeza. Ada yang banyak, ada yang sedikit — <b>semua normal</b>.</span></li>
             <li className="flex gap-2"><span className="text-rose-400">✿</span><span>Jangan compare dengan ibu lain atau dengan angka di sini.</span></li>
             <li className="flex gap-2"><span className="text-rose-400">✿</span><span>Yang penting: bayi <b>cukup makan, sihat & happy</b> — bukan angka di calculator.</span></li>
@@ -699,7 +698,7 @@ export default function EBMCalculator() {
           🌸 Formula: Berat (kg) × 150ml. Panduan ni sebagai rujukan kasar je —
           sila rujuk pediatrician untuk nasihat khusus.
         </p>
-        <p className="text-xs text-center text-pink-300 mt-2 font-semibold">v2.1</p>
+        <p className="text-xs text-center text-pink-300 mt-2 font-semibold">v2.2</p>
       </div>
     </div>
   );
